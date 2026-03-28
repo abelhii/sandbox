@@ -1,0 +1,10 @@
+{
+  "include": ["**/*.ts"],
+  "compilerOptions": {
+    "composite": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "emitDeclarationOnly": true,
+    "allowImportingTsExtensions": true,
+  }
+}

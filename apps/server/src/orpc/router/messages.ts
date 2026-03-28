@@ -1,5 +1,5 @@
 import { ORPCError, os } from "@orpc/server";
-import { desc, eq } from "drizzle-orm";
+import { asc, eq } from "drizzle-orm";
 import { z } from "zod";
 
 import { SendMessageSchema } from "@sandbox/shared";
@@ -23,7 +23,7 @@ export const messagesRouter = o.router({
         .select()
         .from(messages)
         .where(eq(messages.roomId, input.roomId))
-        .orderBy(desc(messages.createdAt))
+        .orderBy(asc(messages.createdAt))
         .limit(input.limit);
     }),
 

@@ -1,23 +1,24 @@
-import { Textarea } from "#/components/ui/textarea";
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+
+import { Chatbox } from "#/components/Chatbox";
+import {
+  useListMessages,
+  useSendMessage,
+} from "#/lib/data-access/use-messages";
+import { Message } from "#/components/Message";
+import { useSession } from "#/lib/data-access/use-session";
 
 export const Route = createFileRoute("/chat-room")({
   component: RouteComponent,
 });
 
 function RouteComponent() {
-  const [messages, setMessages] = useState<string[]>([]);
+  const { data: session } = useSession();
+  const { data: messages } = useListMessages("test-room");
+  const { mutate: sendMessage } = useSendMessage();
 
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      // Handle sending the message here
-      const message = event.currentTarget.value.trim();
-      console.log("Message sent:", message);
-      setMessages((prevMessages) => [...prevMessages, message]);
-      event.currentTarget.value = ""; // Clear the textarea after sending
-    }
+  const handleSendMessage = (message: string) => {
+    sendMessage({ roomId: "test-room", content: message });
   };
 
   return (
@@ -33,24 +34,19 @@ function RouteComponent() {
           your own routes, styling, and add-ons.
         </p>
 
-        {messages.length > 0 && (
-          <div className="mt-4 bg-white/10 p-4 shadow rounded-lg">
+        {messages && messages.length > 0 && (
+          <div className="flex flex-col gap-6 mt-4 bg-white/10 p-6 shadow rounded-lg overflow-auto max-h-[50dvh]">
             {messages.map((message, index) => (
-              <p
+              <Message
                 key={index}
-                className="m-0 text-base leading-8 text-gray-800 rounded-md bg-gray-100/80 p-2 px-4 mb-2"
-              >
-                {message}
-              </p>
+                displayName={session?.displayName || "Unknown"}
+                {...message}
+              />
             ))}
           </div>
         )}
 
-        <Textarea
-          className="mt-4"
-          placeholder="Type your message here..."
-          onKeyDown={handleKeyDown}
-        />
+        <Chatbox onSendMessage={handleSendMessage} />
       </section>
     </main>
   );
