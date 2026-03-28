@@ -1,0 +1,35 @@
+{
+  "name": "server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx --env-file=.env.local --watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.11",
+    "@orpc/server": "^1.13.6",
+    "@orpc/zod": "^1.13.6",
+    "@sandbox/shared": "workspace:*",
+    "dotenv": "^17.3.1",
+    "drizzle-kit": "^0.31.9",
+    "drizzle-orm": "^0.45.1",
+    "hono": "^4.12.9",
+    "hono-rate-limiter": "^0.5.3",
+    "pg": "^8.16.3",
+    "sanitize-html": "^2.17.2",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/pg": "^8.15.6",
+    "@types/sanitize-html": "^2.16.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2"
+  }
+}
