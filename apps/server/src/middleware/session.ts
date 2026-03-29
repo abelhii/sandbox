@@ -49,7 +49,7 @@ function parseSession(raw: string | undefined): Session | null {
 
     const expected = sign(`${sessionId}|${displayName}`);
     if (signature !== expected) return null; // tampered
-    
+
     return { sessionId, displayName };
   } catch {
     return null;
@@ -64,6 +64,18 @@ function createSession(): { session: Session; cookieValue: string } {
     `${sessionId}|${displayName}|${signature}`,
   ).toString("base64");
   return { session: { sessionId, displayName }, cookieValue };
+}
+
+export function parseOrCreateSession(
+  cookieHeader: string | undefined,
+): Session {
+  const raw = cookieHeader
+    ?.split(";")
+    .find((c) => c.trim().startsWith(`${SESSION_COOKIE}=`))
+    ?.split("=")[1]
+    ?.trim();
+
+  return parseSession(raw) ?? createSession().session;
 }
 
 export const sessionMiddleware = createMiddleware(async (c, next) => {

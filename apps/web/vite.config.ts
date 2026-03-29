@@ -23,6 +23,20 @@ const config = defineConfig({
       },
     }),
   ],
+
+  server: {
+    port: 4000,
+    proxy: {
+      "/api": {
+        target: "http://localhost:4001",
+        changeOrigin: true,
+      },
+      "/ws": {
+        target: "ws://localhost:4001",
+        ws: true, // ← tells Vite to proxy as WebSocket
+      },
+    },
+  },
 });
 
 export default config;
