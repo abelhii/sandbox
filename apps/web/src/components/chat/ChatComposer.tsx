@@ -1,19 +1,19 @@
 import { cn } from "#/lib/utils";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 
-type ChatboxProps = {
+type ChatComposerProps = {
   className?: string;
   placeholder?: string;
   onSendMessage: (message: string) => void;
 };
 
-export function Chatbox({
+export function ChatComposer({
   className,
   placeholder = "Type your message here...",
   onSendMessage,
-}: ChatboxProps) {
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+}: ChatComposerProps) {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
     const message = formData.get("message")?.toString().trim();

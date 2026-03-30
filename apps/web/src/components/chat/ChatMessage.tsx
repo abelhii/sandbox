@@ -1,17 +1,17 @@
 import { cn } from "#/lib/utils";
 import { type Message } from "@sandbox/shared";
 
-type MessageProps = { displayName: string } & Pick<
+type ChatMessageProps = { displayName: string } & Pick<
   Message,
   "content" | "senderName" | "createdAt"
 >;
 
-export function Message({
+export function ChatMessage({
   content,
   senderName,
   createdAt,
   displayName,
-}: MessageProps) {
+}: ChatMessageProps) {
   const isSender = senderName === displayName;
 
   return (
