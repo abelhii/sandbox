@@ -8,7 +8,7 @@ COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/ ./packages/
 COPY apps/server/ ./apps/server/
 
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --no-frozen-lockfile
 
 WORKDIR /app/apps/server
 EXPOSE 4001
