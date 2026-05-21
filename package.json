@@ -1,5 +1,6 @@
 {
   "name": "sandbox",
+  "packageManager": "pnpm@8.15.7",
   "private": true,
   "scripts": {
     "dev:web": "pnpm --filter web dev",
