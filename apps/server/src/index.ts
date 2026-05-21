@@ -3,47 +3,57 @@ import { Hono } from "hono";
 import { rateLimiter } from "hono-rate-limiter";
 import { cors } from "hono/cors";
 import { WebSocketServer } from "ws";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
 
+import { db } from "./db/index.ts";
 import { sessionMiddleware } from "./middleware/session.ts";
 import { orpcHandler } from "./orpc/handler.ts";
 import { handleWsUpgrade } from "./orpc/ws-handler.ts";
-import { IncomingMessage } from "http";
 
-const app = new Hono();
+async function bootstrap() {
+  console.log("Running database migrations...");
+  await migrate(db, { migrationsFolder: "./drizzle" });
+  console.log("Migrations complete.");
 
-app.use(
-  "*",
-  cors({
-    origin: process.env.WEB_URL ?? "http://localhost:4001",
-    credentials: true,
-  }),
-);
+  const app = new Hono();
 
-app.use("*", sessionMiddleware);
+  app.use(
+    "*",
+    cors({
+      origin: process.env.WEB_URL ?? "http://localhost:4001",
+      credentials: true,
+    }),
+  );
 
-// Apply rate limiting to all routes, especially important for the RPC endpoint
-app.use(
-  rateLimiter({
-    windowMs: 60 * 1000, // 1 minute
-    limit: 20, // 20 messages per minute per window
-    keyGenerator: (c) =>
-      c.req.header("x-forwarded-for") ?? c.get("session").sessionId, // rate limit by IP or session ID if available
-  }),
-);
+  app.use("*", sessionMiddleware);
 
-app.get("/health", (c) => c.json({ ok: true }));
-app.all("/api/rpc/*", (c) => orpcHandler(c));
+  app.use(
+    rateLimiter({
+      windowMs: 60 * 1000,
+      limit: 20,
+      keyGenerator: (c) =>
+        c.req.header("x-forwarded-for") ?? c.get("session").sessionId,
+    }),
+  );
 
-const port = Number(process.env.PORT ?? 4001);
-const server = serve({ fetch: app.fetch, port, });
-const wss = new WebSocketServer({ server });
+  app.get("/health", (c) => c.json({ ok: true }));
+  app.all("/api/rpc/*", (c) => orpcHandler(c));
 
-wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
-  ws.on('error', (err: Error) => console.error('[WS socket error]', err))
-  
-  handleWsUpgrade(ws, req)
-})
+  const port = Number(process.env.PORT ?? 4001);
+  const server = serve({ fetch: app.fetch, port });
+  const wss = new WebSocketServer({ server });
 
-wss.on('error', (err: Error) => console.error('[WSS error]', err))
+  wss.on("connection", (ws, req) => {
+    ws.on("error", (err) => console.error("[WS socket error]", err));
+    handleWsUpgrade(ws, req);
+  });
 
-console.log(`Server running on http://localhost:${port}`);
+  wss.on("error", (err) => console.error("[WSS error]", err));
+
+  console.log(`Server running on http://localhost:${port}`);
+}
+
+bootstrap().catch((err) => {
+  console.error("Failed to start server:", err);
+  process.exit(1);
+});
