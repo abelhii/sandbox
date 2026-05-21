@@ -7,6 +7,7 @@ import { WebSocketServer } from "ws";
 import { sessionMiddleware } from "./middleware/session.ts";
 import { orpcHandler } from "./orpc/handler.ts";
 import { handleWsUpgrade } from "./orpc/ws-handler.ts";
+import { IncomingMessage } from "http";
 
 const app = new Hono();
 
@@ -37,12 +38,12 @@ const port = Number(process.env.PORT ?? 4001);
 const server = serve({ fetch: app.fetch, port, });
 const wss = new WebSocketServer({ server });
 
-wss.on('connection', (ws, req) => {
-  ws.on('error', (err) => console.error('[WS socket error]', err))
+wss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
+  ws.on('error', (err: Error) => console.error('[WS socket error]', err))
   
   handleWsUpgrade(ws, req)
 })
 
-wss.on('error', (err) => console.error('[WSS error]', err))
+wss.on('error', (err: Error) => console.error('[WSS error]', err))
 
 console.log(`Server running on http://localhost:${port}`);

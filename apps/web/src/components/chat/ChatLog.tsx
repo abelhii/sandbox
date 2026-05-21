@@ -79,7 +79,7 @@ export function ChatLog({
         <Button
           className={cn(
             "absolute bottom-4 right-8 h-10 w-10 rounded-full hover:bg-gray-400",
-            isAtBottom ? "hidden" : "block",
+            isAtBottom ? "hidden" : "absolute",
           )}
           onClick={scrollToBottom}
         >

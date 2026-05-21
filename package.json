@@ -4,7 +4,14 @@
   "scripts": {
     "dev:web": "pnpm --filter web dev",
     "dev:server": "pnpm --filter server dev",
-    "dev": "pnpm run --parallel dev"
+    "dev": "pnpm run --parallel dev",
+    "docker-dev": "docker-compose --profile dev up",
+    "docker-dev:build": "docker-compose --profile dev build",
+    "docker-prod": "docker-compose --profile prod up -d",
+    "docker-prod:build": "docker-compose --profile prod build",
+    "docker:logs": "docker-compose logs -f",
+    "docker:down": "docker-compose down",
+    "docker:clean": "docker-compose down -v"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
