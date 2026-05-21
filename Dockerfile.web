@@ -5,6 +5,7 @@ WORKDIR /app
 
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY packages/ ./packages/
+COPY apps/server/ ./apps/server/
 COPY apps/web/ ./apps/web/
 
 RUN pnpm install --no-frozen-lockfile
